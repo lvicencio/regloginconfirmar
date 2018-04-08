@@ -28,7 +28,7 @@ namespace regloginconfirmar.Models
         public string Email { get; set; }
 
         [Display(Name = "Fecha de Nacimiento")]
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString ="{0:dd/MM/yyyy}")]
         public DateTime FechaNacimiento { get; set; }
 
