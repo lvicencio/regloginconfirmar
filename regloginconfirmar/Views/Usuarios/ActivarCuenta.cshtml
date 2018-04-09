@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewBag.Title = "Activar Cuenta";
+}
+
+<h2>ActivarCuenta</h2>
+
+@if (ViewBag.Status != null && Convert.ToBoolean(ViewBag.Status))
+{
+    <div class="alert alert-success">
+        <strong>Exito! </strong> Su cuenta fue acitvada con exito.
+        <br />
+        Click para Entrar @Html.ActionLink("Login", "Login", "Usuarios")
+    </div>
+}else
+{
+    <div class="alert alert-danger">
+        <strong> Error de Activación</strong> @ViewBag.Message
+    </div>
+}
+
+
+

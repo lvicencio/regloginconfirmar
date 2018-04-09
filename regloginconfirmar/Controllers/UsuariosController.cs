@@ -69,7 +69,29 @@ namespace regloginconfirmar.Controllers
             return View(user);
         }
 
+        [HttpGet]
+        public ActionResult ActivarCuenta(string id)
+        {
+            bool Status = false;
+            using (registrodbEntities db = new registrodbEntities())
+            {
+                db.Configuration.ValidateOnSaveEnabled = false;  //ihabilitar confirmacion pass
+                var vr = db.Usuario.Where(u => u.Cod_Activacion == new Guid(id)).FirstOrDefault();
+                if (vr != null)
+                {
+                    vr.Email_Verificacion = true;
+                    db.SaveChanges();
+                    Status = true;
+                }
+                else
+                {
+                    ViewBag.Message = "Respuesta Invalida";
+                }
 
+            }
+            ViewBag.Status = Status;
+            return View();
+        }
 
         [NonAction]
         public bool VerificarCorreo(string email)
@@ -85,7 +107,7 @@ namespace regloginconfirmar.Controllers
         [NonAction]
         public void EnviarVerificacionCorreoLink (string email, string cod_activacion)
         {
-            var verifyUrl = "/Usuario/VerificarCuenta/" + cod_activacion;
+            var verifyUrl = "/Usuarios/ActivarCuenta/" + cod_activacion;
             var link = Request.Url.AbsoluteUri.Replace(Request.Url.PathAndQuery, verifyUrl);
 
             var fromEmail = new MailAddress("zealito@gmail.com","Prueba CodVerificacion");
