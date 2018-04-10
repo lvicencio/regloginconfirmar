@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using regloginconfirmar.Models;
 using System.Net.Mail;
 using System.Net;
+using regloginconfirmar.Models.ModelViews;
+using System.Web.Security;
 
 namespace regloginconfirmar.Controllers
 {
@@ -140,7 +142,59 @@ namespace regloginconfirmar.Controllers
 
         }
 
+        [HttpGet]
+        public ActionResult Login()
+        {
+            return View();
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(UsuarioLogin model, string ReturnUrl="")
+        {
+            string message = "";
+            using (registrodbEntities db = new registrodbEntities())
+            {
+                var user = db.Usuario.Where(u => u.Email == model.Email).FirstOrDefault();
+                if (user != null)
+                {
+                    if (string.Compare(helpers.Encriptar.Hash(model.Password),user.Password)==0)
+                    {
+                        int timeout = model.RememberMe ? 43800 : 1;  //un mes = 43800
+                        var ticket = new FormsAuthenticationTicket(model.Email, model.RememberMe, timeout);
+                        string encryptar = FormsAuthentication.Encrypt(ticket);
+                        var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptar);
+                        cookie.Expires = DateTime.Now.AddMinutes(timeout);
+                        cookie.HttpOnly = true;
+                        Response.Cookies.Add(cookie);
+
+                        if (Url.IsLocalUrl(ReturnUrl))
+                        {
+                            return Redirect(ReturnUrl);
+                        }
+                        else
+                        {
+                            return RedirectToAction("Index","Home");
+                        }
+                    }
+                }
+                else
+                {
+                    message = "Error de Autentificación";
+                }
+
+            }
+            ViewBag.Message = message;
+            return View();
+        }
+
+
+        [Authorize]
+        public ActionResult Logout()
+        {
+            FormsAuthentication.SignOut();
+            return RedirectToAction("Login","Usuarios");
+        }
 
         // GET: Usuarios
         public ActionResult Index()

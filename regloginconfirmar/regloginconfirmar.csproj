@@ -180,6 +180,7 @@
       <DependentUpon>Modelo.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\ModelViews\Usuario.cs" />
+    <Compile Include="Models\ModelViews\UsuarioLogin.cs" />
     <Compile Include="Models\Usuario.cs">
       <DependentUpon>Modelo.tt</DependentUpon>
     </Compile>
@@ -244,6 +245,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Usuarios\Registrar.cshtml" />
     <Content Include="Views\Usuarios\ActivarCuenta.cshtml" />
+    <Content Include="Views\Usuarios\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
