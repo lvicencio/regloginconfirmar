@@ -107,19 +107,35 @@ namespace regloginconfirmar.Controllers
         }
 
         [NonAction]
-        public void EnviarVerificacionCorreoLink (string email, string cod_activacion)
+        public void EnviarVerificacionCorreoLink (string email, string cod_activacion, string emailPara = "ActivarCuenta")
         {
-            var verifyUrl = "/Usuarios/ActivarCuenta/" + cod_activacion;
+            var verifyUrl = "/Usuarios/"+emailPara+"/" + cod_activacion;
             var link = Request.Url.AbsoluteUri.Replace(Request.Url.PathAndQuery, verifyUrl);
 
             var fromEmail = new MailAddress("zealito@gmail.com","Prueba CodVerificacion");
             var toEmail = new MailAddress(email);
             var fromEmailPassword = ""; //clave del correo
-            string subject = "Su cuenta fue creada con exito";
 
-            string body = "<br/><br/> Cuerpo del mensaje del correo" +
-                "Cuenta creada con exito, para usar su cuenta, activelo y verifique su cuennta" +
-                "<br/><br/>  <a href='"+link+"'>"+link+"</a> ";
+            string subject = "";
+            string body = "";
+            if (emailPara == "ActivarCuenta")
+            {
+                subject = "Su cuenta fue creada con exito";
+
+                body = "<br/><br/> Cuerpo del mensaje del correo" +
+                    "Cuenta creada con exito, para usar su cuenta, activelo y verifique su cuennta" +
+                    "<br/><br/>  <a href='" + link + "'>" + link + "</a> ";
+            }
+            else if (emailPara == "RecuperarPassword")
+            {
+                subject = "Resetear Contraseña";
+
+                body = "<br/><br/> Recuperación de Contraseña" +
+                    "<br/><br/> Para resetear su contraseña, haga click " +
+                    "<br/><br/>  <a href=" + link + ">Resetear Contraseña</a> ";
+            }
+           
+          
 
             var smtp = new SmtpClient
             {
@@ -185,6 +201,47 @@ namespace regloginconfirmar.Controllers
 
             }
             ViewBag.Message = message;
+            return View();
+        }
+
+
+        [HttpGet]
+        public ActionResult RecuperarPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult RecuperarPassword(string Email)
+        {
+            string message = "";
+            bool status = false;
+
+            using (registrodbEntities db = new registrodbEntities())
+            {
+                var cuenta = db.Usuario.Where(u => u.Email == Email).FirstOrDefault();
+                if (cuenta != null)
+                {
+                    string resetCodigo = Guid.NewGuid().ToString();
+                    EnviarVerificacionCorreoLink(cuenta.Email, resetCodigo, "RecuperarPassword");
+                    cuenta.Cod_Recuperacion = resetCodigo;
+
+                    db.Configuration.ValidateOnSaveEnabled = false;
+                    db.SaveChanges();
+                }
+                else
+                {
+                    message = "La cuenta no existe";
+                }
+
+            }
+           return View();
+        }
+
+
+        public ActionResult ResetearPassword(string id)
+        {
+            
             return View();
         }
 

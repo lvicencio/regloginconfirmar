@@ -246,6 +246,7 @@
     <Content Include="Views\Usuarios\Registrar.cshtml" />
     <Content Include="Views\Usuarios\ActivarCuenta.cshtml" />
     <Content Include="Views\Usuarios\Login.cshtml" />
+    <Content Include="Views\Usuarios\RecuperarPassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

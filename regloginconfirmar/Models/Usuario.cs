@@ -22,5 +22,7 @@ namespace regloginconfirmar.Models
         public string Password { get; set; }
         public bool Email_Verificacion { get; set; }
         public System.Guid Cod_Activacion { get; set; }
+        public string Cod_Recuperacion { get; set; }
+        public string Role { get; set; }
     }
 }
