@@ -181,6 +181,7 @@
     </Compile>
     <Compile Include="Models\ModelViews\Usuario.cs" />
     <Compile Include="Models\ModelViews\UsuarioLogin.cs" />
+    <Compile Include="Models\ModelViews\UsuarioResetPass.cs" />
     <Compile Include="Models\Usuario.cs">
       <DependentUpon>Modelo.tt</DependentUpon>
     </Compile>
@@ -247,6 +248,7 @@
     <Content Include="Views\Usuarios\ActivarCuenta.cshtml" />
     <Content Include="Views\Usuarios\Login.cshtml" />
     <Content Include="Views\Usuarios\RecuperarPassword.cshtml" />
+    <Content Include="Views\Usuarios\ResetearPassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

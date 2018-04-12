@@ -8,6 +8,7 @@ using System.Net.Mail;
 using System.Net;
 using regloginconfirmar.Models.ModelViews;
 using System.Web.Security;
+using regloginconfirmar.helpers;
 
 namespace regloginconfirmar.Controllers
 {
@@ -126,7 +127,7 @@ namespace regloginconfirmar.Controllers
                     "Cuenta creada con exito, para usar su cuenta, activelo y verifique su cuennta" +
                     "<br/><br/>  <a href='" + link + "'>" + link + "</a> ";
             }
-            else if (emailPara == "RecuperarPassword")
+            else if (emailPara == "ResetearPassword")
             {
                 subject = "Resetear Contraseña";
 
@@ -223,11 +224,13 @@ namespace regloginconfirmar.Controllers
                 if (cuenta != null)
                 {
                     string resetCodigo = Guid.NewGuid().ToString();
-                    EnviarVerificacionCorreoLink(cuenta.Email, resetCodigo, "RecuperarPassword");
+                    EnviarVerificacionCorreoLink(cuenta.Email, resetCodigo, "ResetearPassword");
                     cuenta.Cod_Recuperacion = resetCodigo;
 
                     db.Configuration.ValidateOnSaveEnabled = false;
                     db.SaveChanges();
+
+                    message = "Para resetear su cuenta, el Link se envio a su correo";
                 }
                 else
                 {
@@ -235,16 +238,59 @@ namespace regloginconfirmar.Controllers
                 }
 
             }
+            ViewBag.Message = message;
            return View();
         }
 
 
         public ActionResult ResetearPassword(string id)
         {
-            
-            return View();
-        }
+            using (registrodbEntities db = new registrodbEntities())
+            {
+                var usuario = db.Usuario.Where(u => u.Cod_Recuperacion == id).FirstOrDefault();
+                if (usuario != null)
+                {
+                    UsuarioResetPass model = new UsuarioResetPass();
+                    model.Cod_Reset = id;
 
+                    return View(model);
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+
+            }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ResetearPassword(UsuarioResetPass model)
+        {
+            var message = "";
+            if (ModelState.IsValid)
+            {
+                using (registrodbEntities db = new registrodbEntities())
+                {
+                    var usuario = db.Usuario.Where(u => u.Cod_Recuperacion == model.Cod_Reset).FirstOrDefault();
+                    if (usuario != null)
+                    {
+                        usuario.Password =Encriptar.Hash(model.NuevaPassword);
+                        usuario.Cod_Recuperacion = "";
+                        db.Configuration.ValidateOnSaveEnabled = false;
+                        db.SaveChanges();
+
+                        message = "Nueva contraseña se ha generado con exito";
+                    }
+                }
+            }
+            else
+            {
+                message = "Error en Resetear su Contraseña";
+            }
+            ViewBag.Message = message;
+            return View(model);
+        }
 
         [Authorize]
         public ActionResult Logout()

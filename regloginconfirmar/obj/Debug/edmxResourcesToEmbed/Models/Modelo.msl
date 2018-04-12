@@ -4,6 +4,8 @@
     <EntitySetMapping Name="Usuario">
       <EntityTypeMapping TypeName="registrodbModel.Usuario">
         <MappingFragment StoreEntitySet="Usuario">
+          <ScalarProperty Name="Role" ColumnName="Role" />
+          <ScalarProperty Name="Cod_Recuperacion" ColumnName="Cod_Recuperacion" />
           <ScalarProperty Name="Id_Usuario" ColumnName="Id_Usuario" />
           <ScalarProperty Name="Nombre" ColumnName="Nombre" />
           <ScalarProperty Name="Apellido" ColumnName="Apellido" />
